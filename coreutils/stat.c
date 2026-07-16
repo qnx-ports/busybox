@@ -106,6 +106,9 @@
 
 #include "libbb.h"
 #include "common_bufsiz.h"
+#ifdef __QNX__
+# include <sys/mount.h>
+#endif
 
 enum {
 	OPT_TERSE       = (1 << 0),
@@ -227,7 +230,7 @@ static const char *human_fstype(uint32_t f_type)
 
 /* "man statfs" says that statfsbuf->f_fsid is a mess */
 /* coreutils treats it as an array of ints, most significant first */
-static unsigned long long get_f_fsid(const struct statfs *statfsbuf)
+static unsigned long long get_f_fsid(const struct statvfs *statfsbuf)
 {
 	const unsigned *p = (const void*) &statfsbuf->f_fsid;
 	unsigned sz = sizeof(statfsbuf->f_fsid) / sizeof(unsigned);
@@ -260,7 +263,7 @@ static void FAST_FUNC print_statfs(char *pformat, const char m,
 		const char *const filename, const void *data
 		IF_SELINUX(, security_context_t scontext))
 {
-	const struct statfs *statfsbuf = data;
+	const struct statvfs *statfsbuf = data;
 	if (m == 'n') {
 		printfs(pformat, filename);
 	} else if (m == 'i') {
@@ -268,12 +271,12 @@ static void FAST_FUNC print_statfs(char *pformat, const char m,
 		printf(pformat, get_f_fsid(statfsbuf));
 	} else if (m == 'l') {
 		strcat(pformat, "lu");
-		printf(pformat, (unsigned long) statfsbuf->f_namelen);
+		printf(pformat, (unsigned long) statfsbuf->f_namemax);
 	} else if (m == 't') {
 		strcat(pformat, "lx");
-		printf(pformat, (unsigned long) statfsbuf->f_type); /* no equiv */
+		printf(pformat, statfsbuf->f_basetype); /* no equiv */
 	} else if (m == 'T') {
-		printfs(pformat, human_fstype(statfsbuf->f_type));
+		printfs(pformat, statfsbuf->f_basetype);
 	} else if (m == 'b') {
 		strcat(pformat, "llu");
 		printf(pformat, (unsigned long long) statfsbuf->f_blocks);
@@ -470,7 +473,7 @@ static void print_it(const char *masterformat,
 #endif
 static bool do_statfs(const char *filename, const char *format)
 {
-	struct statfs statfsbuf;
+	struct statvfs statfsbuf;
 #if !ENABLE_FEATURE_STAT_FORMAT
 	const char *format;
 #endif
@@ -488,7 +491,7 @@ static bool do_statfs(const char *filename, const char *format)
 		}
 	}
 #endif
-	if (statfs(filename, &statfsbuf) != 0) {
+	if (statvfs(filename, &statfsbuf) != 0) {
 		bb_perror_msg("can't read file system information for '%s'", filename);
 		return 0;
 	}

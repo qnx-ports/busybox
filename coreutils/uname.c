@@ -170,15 +170,32 @@ int uname_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 		}
 	}
 #endif
+#if defined(__QNX__)
+    {
+         char buff[_SYSNAME_SIZE];
+         confstr(_CS_ARCHITECTURE, buff, sizeof(buff));
+
+         //strcpy(uname_info.name.machine, buff);
+         strcpy(uname_info.processor, buff);
+    }
+#endif
+
 	if (ENABLE_BB_ARCH && (!ENABLE_UNAME || applet_name[0] == 'a')) {
+#if defined(__QNX__)
+		puts(uname_info.processor);
+#else
 		puts(uname_info.name.machine);
+#endif
 	} else {
 #if ENABLE_UNAME
 		/* "uname" */
 		const char *fmt;
 		const unsigned short *delta;
 
+#if !defined(__QNX__)
+		// QNX uses -p for aarch information
 		strcpy(uname_info.processor, unknown_str);
+#endif
 		strcpy(uname_info.platform, unknown_str);
 		strcpy(uname_info.os, CONFIG_UNAME_OSNAME);
 # if ENABLE_FEDORA_COMPAT

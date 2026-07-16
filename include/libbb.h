@@ -192,7 +192,7 @@ int klogctl(int type, char *b, int len);
 # define BUFSIZ 4096
 #endif
 
-#if __GNUC_PREREQ(5,0)
+#if (defined(__clang__) && defined(__has_builtin) && __has_builtin(__builtin_bswap16)) ||  __GNUC_PREREQ(5,0)
 /* Since musl is apparently unable to get it right and would use
  * a function call to a single-instruction function of "bswap %eax",
  * reroute to gcc builtins:
@@ -1834,7 +1834,7 @@ int bb_xioctl(int fd, unsigned request, void *argp) FAST_FUNC;
 char *is_in_ino_dev_hashtable(const struct stat *statbuf) FAST_FUNC;
 void add_to_ino_dev_hashtable(const struct stat *statbuf, const char *name) FAST_FUNC;
 void reset_ino_dev_hashtable(void) FAST_FUNC;
-#ifdef __GLIBC__
+#if defined(__GLIBC__) || defined(__QNX__)
 /* At least glibc has horrendously large inline for this, so wrap it */
 unsigned long long bb_makedev(unsigned major, unsigned minor) FAST_FUNC;
 #undef makedev

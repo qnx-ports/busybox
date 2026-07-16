@@ -370,7 +370,7 @@ struct globals {
    045 gray foreground               057 white background
 */
 #define COLOR(mode) ( \
-	/*un  fi  chr  -  dir  -  blk  -  file -  link -  sock -   -  exe */ \
+	/*un  fi  chr  -  dir QNF  blk  -  file -  link -  sock -   -  exe */ \
 	"\037\043\043\045\042\045\043\043\000\045\044\045\043\045\045\040" \
 	[TYPEINDEX(mode)])
 /* Select normal (0) [actually "reset all"] or bold (1)
@@ -379,8 +379,8 @@ struct globals {
  * Note: coreutils 6.9 uses inverted red for setuid binaries.
  */
 #define ATTR(mode) ( \
-	/*un fi chr - dir - blk - file- link- sock- -  exe */ \
-	"\01\00\01\07\01\07\01\07\00\07\01\07\01\07\07\01" \
+	/*un fi chr - dir QNF blk - file- link- sock- -  exe */ \
+	"\01\00\01\07\01\00\01\07\00\07\01\07\01\07\07\01" \
 	[TYPEINDEX(mode)])
 
 #if ENABLE_FEATURE_LS_COLOR

@@ -11,7 +11,7 @@
 
 /* Different Unixes want different headers for makedev */
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) \
- || defined(__APPLE__)
+ || defined(__APPLE__) || defined(__QNX__)
 # include <sys/types.h>
 #else
 # include <features.h>
@@ -27,5 +27,12 @@ unsigned long long FAST_FUNC bb_makedev(unsigned major, unsigned minor);
 unsigned long long FAST_FUNC bb_makedev(unsigned major, unsigned minor)
 {
 	return makedev(major, minor);
+}
+#elifdef __QNX__
+/* Suppress gcc "no previous prototype" warning */
+unsigned long long FAST_FUNC bb_makedev(unsigned major, unsigned minor);
+unsigned long long FAST_FUNC bb_makedev(unsigned major, unsigned minor)
+{
+       return makedev(0, major, minor);
 }
 #endif

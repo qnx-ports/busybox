@@ -164,6 +164,11 @@
 # define bswap_64 __bswap64
 # define bswap_32 __bswap32
 # define bswap_16 __bswap16
+#elif defined(__QNX__)
+# include <sys/param.h>
+# define bswap_64 __builtin_bswap64
+# define bswap_32 __builtin_bswap32
+# define bswap_16 __builtin_bswap16
 #else
 # include <byteswap.h>
 # include <endian.h>
@@ -488,6 +493,21 @@ typedef unsigned smalluint;
 # undef HAVE_UNLOCKED_STDIO
 # undef HAVE_UNLOCKED_LINE_OPS
 # undef HAVE_PRINTF_PERCENTM
+#endif
+
+#if defined(__QNX__)
+# undef HAVE_MNTENT_H
+# undef HAVE_SYS_STATFS_H
+# undef HAVE_UNLOCKED_LINE_OPS
+# undef HAVE_STRVERSCMP
+# undef HAVE_STRCHRNUL
+# undef HAVE_DPRINTF
+# undef HAVE_MEMPCPY
+# undef HAVE_MEMRCHR
+# define SA_RESTART 0
+# ifndef __X86__
+#  undef HAVE_GETLINE
+# endif
 #endif
 
 #if defined(__dietlibc__)

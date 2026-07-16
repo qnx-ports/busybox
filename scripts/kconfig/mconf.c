@@ -475,7 +475,7 @@ static int exec_conf(void)
 		struct sigaction sa;
 		sa.sa_handler = winch_handler;
 		sigemptyset(&sa.sa_mask);
-		sa.sa_flags = SA_RESTART;
+		sa.sa_flags = 0;
 		sigaction(SIGWINCH, &sa, NULL);
 	}
 #endif
